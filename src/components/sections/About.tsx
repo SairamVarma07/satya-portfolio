@@ -1,32 +1,32 @@
-import { useRef } from 'react';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { useInView } from 'react-intersection-observer';
-import avatarImg from '../../assets/Gemini.png';
+import { useRef } from "react";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { useInView } from "react-intersection-observer";
+import avatarImg from "../../assets/Gemini.png";
 
 const stats = [
-  { value: '4.0', label: 'GPA / 4.0' },
-  { value: '2', label: 'Publications' },
-  { value: '200+', label: 'Users Served' },
-  { value: '5+', label: 'Years Coding' },
+  { value: "4.0", label: "GPA / 4.0" },
+  { value: "2", label: "Publications" },
+  { value: "200+", label: "Users Served" },
+  { value: "5+", label: "Years Coding" },
 ];
 
 const highlights = [
-  'Founder & Lead Engineer at Vytara AI, a production wellness platform with 200+ users',
-  'First-author research accepted at CVPR 2026 and IEEE ICNC 2026',
-  'Full-stack development with React, Java Spring Boot, Python, and AWS',
-  'Strong focus on scalable systems, API design, and ML in production',
+  "Founder & Lead Engineer at Vytara AI, a production wellness platform with 200+ users",
+  "First-author research accepted at CVPR 2026 and IEEE ICNC 2026",
+  "Full-stack development with React, Java Spring Boot, Python, and AWS",
+  "Strong focus on scalable systems, API design, and ML in production",
 ];
 
 const education = [
   {
-    degree: 'M.S. Computer Science',
-    school: 'University of Illinois Springfield',
-    meta: 'GPA 4.0 · Expected June 2026',
+    degree: "M.S. Computer Science",
+    school: "University of Illinois Springfield",
+    meta: "GPA 4.0 · May 2026",
   },
   {
-    degree: 'B.S. Computer Science',
-    school: 'Lovely Professional University, India',
-    meta: 'GPA 3.75 / 4.0',
+    degree: "B.S. Computer Science",
+    school: "Lovely Professional University, India",
+    meta: "GPA 3.75 / 4.0",
   },
 ];
 
@@ -38,8 +38,8 @@ function AboutPhoto({ inView }: { inView: boolean }) {
   const springX = useSpring(rotateX, { stiffness: 120, damping: 20 });
   const springY = useSpring(rotateY, { stiffness: 120, damping: 20 });
 
-  const shineX = useTransform(springY, [-12, 12], ['0%', '100%']);
-  const shineY = useTransform(springX, [-12, 12], ['0%', '100%']);
+  const shineX = useTransform(springY, [-12, 12], ["0%", "100%"]);
+  const shineY = useTransform(springX, [-12, 12], ["0%", "100%"]);
 
   const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = cardRef.current?.getBoundingClientRect();
@@ -68,7 +68,7 @@ function AboutPhoto({ inView }: { inView: boolean }) {
         style={{
           rotateX: springX,
           rotateY: springY,
-          transformStyle: 'preserve-3d',
+          transformStyle: "preserve-3d",
           transformPerspective: 800,
         }}
         onMouseMove={onMouseMove}
@@ -118,12 +118,13 @@ export default function About() {
         >
           <p className="section-label">01 / About</p>
           <h2 className="section-title">
-            Software Engineer &{' '}
+            Software Engineer &{" "}
             <span className="gradient-text">AI Researcher</span>
           </h2>
           <p className="about-intro">
-            M.S. Computer Science candidate at UIS (4.0 GPA). Open to software engineering
-            and AI research roles.
+            M.S. Computer Science Graduate from University of Illinois
+            Springfield (4.0 GPA, May 2026). Open to software engineering and AI
+            research roles.
           </p>
         </motion.div>
 
@@ -135,9 +136,10 @@ export default function About() {
             transition={{ delay: 0.2, duration: 0.7 }}
           >
             <p className="about-lead">
-              I build production AI systems and publish research in computer vision and
-              energy-efficient neural networks. My work spans full-stack engineering,
-              machine learning, and research that ships to real users.
+              I build production AI systems and publish research in computer
+              vision and energy-efficient neural networks. My work spans
+              full-stack engineering, machine learning, and research that ships
+              to real users.
             </p>
 
             <ul className="about-highlights">

@@ -2,240 +2,38 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 
-type Status = 'idle' | 'sending' | 'sent';
-interface FormState { name: string; email: string; subject: string; message: string; }
+const CONTACT_EMAIL = 'sairamvrm@gmail.com';
 
-/* ── Status readouts on the right panel ─────────────────────────── */
-const STATUS_ROWS = [
-  { label: 'AVAILABILITY',  value: 'Full-time · Contract · Research', color: '#4ade80' },
-  { label: 'RESPONSE TIME', value: '< 24 hours',                      color: '#22d3ee' },
-  { label: 'TIMEZONE',      value: 'EST (UTC-5) · Flexible',          color: '#818cf8' },
-  { label: 'ENCRYPTION',   value: 'AES-256 · Secure Channel',        color: '#a855f7' },
+type Status = 'idle' | 'sending' | 'sent' | 'error';
+
+interface FormState {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}
+
+const CONTACT_LINKS = [
+  {
+    label: 'Email',
+    value: CONTACT_EMAIL,
+    href: `mailto:${CONTACT_EMAIL}`,
+    description: 'Best for job opportunities & quick questions',
+  },
+  {
+    label: 'LinkedIn',
+    value: 'linkedin.com/in/sairam-varma07',
+    href: 'https://linkedin.com/in/sairam-varma07',
+    description: 'Connect professionally',
+  },
+  {
+    label: 'Location',
+    value: 'Atlanta, GA · Open to Remote',
+    href: null,
+    description: 'Available for relocation',
+  },
 ];
 
-const INFO_ITEMS = [
-  { icon: '✉',  label: 'Email',    value: 'sairamvrm@gmail.com',           href: 'mailto:sairamvrm@gmail.com'                  },
-  { icon: 'in', label: 'LinkedIn', value: 'linkedin.com/in/sairam-varma07', href: 'https://linkedin.com/in/sairam-varma07'       },
-  { icon: '◎',  label: 'Location', value: 'Atlanta, GA · Open to Remote',   href: null                                          },
-];
-
-/* ─────────────────────────────────────────────────────────────────
-   RIGHT — Comm Hub: rotating CSS rings + status board + info list
-───────────────────────────────────────────────────────────────── */
-function CommHub({ inView }: { inView: boolean }) {
-  return (
-    <motion.div
-      className="comm-hub-col"
-      initial={{ opacity: 0, x: 40 }}
-      animate={inView ? { opacity: 1, x: 0 } : {}}
-      transition={{ delay: 0.3, duration: 0.8, ease: 'easeOut' }}
-    >
-      {/* ── Circular ring system ── */}
-      <div className="comm-hub-ring-wrap">
-        {/* Ambient glow behind rings */}
-        <div className="ch-ambient" />
-
-        {/* Ring 1 — outermost, dashed, slow CW */}
-        <div className="ch-ring ch-ring-1" />
-        {/* Ring 2 — medium, partial arc, CCW */}
-        <div className="ch-ring ch-ring-2" />
-        {/* Ring 3 — inner, bright leading edge, fast CW */}
-        <div className="ch-ring ch-ring-3" />
-
-        {/* Cardinal tick marks on outer ring */}
-        <span className="ch-tick ch-n" />
-        <span className="ch-tick ch-e" />
-        <span className="ch-tick ch-s" />
-        <span className="ch-tick ch-w" />
-
-        {/* Center monogram */}
-        <div className="ch-center">
-          <div className="ch-center-pulse" />
-          <p className="ch-monogram">SSV</p>
-          <p className="ch-mono-sub">ENGINEER · AI</p>
-        </div>
-      </div>
-
-      {/* ── Status readout board ── */}
-      <div className="comm-status-board">
-        <p className="csb-header">
-          <span className="csb-header-dot" />
-          SYSTEM STATUS
-        </p>
-        {STATUS_ROWS.map((row, i) => (
-          <motion.div
-            key={row.label}
-            className="csb-row"
-            initial={{ opacity: 0, x: 16 }}
-            animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ delay: 0.7 + i * 0.1, duration: 0.45 }}
-          >
-            <span className="csb-dot" style={{ background: row.color, boxShadow: `0 0 6px ${row.color}` }} />
-            <span className="csb-label">{row.label}</span>
-            <span className="csb-value" style={{ color: row.color }}>{row.value}</span>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* ── Contact info list ── */}
-      <div className="comm-info-list">
-        {INFO_ITEMS.map((item, i) => (
-          <motion.div
-            key={item.label}
-            initial={{ opacity: 0, y: 10 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 1.1 + i * 0.1, duration: 0.45 }}
-          >
-            {item.href ? (
-              <a
-                href={item.href}
-                target={item.href.startsWith('http') ? '_blank' : undefined}
-                rel="noreferrer"
-                className="contact-info-item"
-              >
-                <span className="ci-icon">{item.icon}</span>
-                <div><span className="ci-label">{item.label}</span><span className="ci-value">{item.value}</span></div>
-              </a>
-            ) : (
-              <div className="contact-info-item">
-                <span className="ci-icon">{item.icon}</span>
-                <div><span className="ci-label">{item.label}</span><span className="ci-value">{item.value}</span></div>
-              </div>
-            )}
-          </motion.div>
-        ))}
-      </div>
-    </motion.div>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────────────
-   LEFT — Terminal form panel
-───────────────────────────────────────────────────────────────── */
-function TerminalForm({
-  form, update, status, handleSubmit, inView,
-}: {
-  form: FormState;
-  update: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-  status: Status;
-  handleSubmit: (e: React.FormEvent) => void;
-  inView: boolean;
-}) {
-  const label =
-    status === 'sending' ? 'TRANSMITTING...'
-    : status === 'sent'  ? '✓ TRANSMISSION COMPLETE'
-    : 'TRANSMIT  MESSAGE  ➤';
-
-  return (
-    <motion.div
-      className="terminal-panel"
-      initial={{ opacity: 0, x: -30 }}
-      animate={inView ? { opacity: 1, x: 0 } : {}}
-      transition={{ delay: 0.2, duration: 0.8, ease: 'easeOut' }}
-    >
-      {/* Corner brackets */}
-      <span className="tp-corner tp-tl" />
-      <span className="tp-corner tp-tr" />
-      <span className="tp-corner tp-bl" />
-      <span className="tp-corner tp-br" />
-
-      {/* Slow scanning line */}
-      <div className="tp-scanline" />
-
-      {/* Title bar */}
-      <div className="tp-titlebar">
-        <div className="tp-traffic-lights">
-          <span style={{ background: '#ef4444' }} />
-          <span style={{ background: '#f59e0b' }} />
-          <span style={{ background: '#22c55e' }} />
-        </div>
-        <span className="tp-titlebar-text">INITIATE_CONTACT.SH</span>
-        <span className="tp-secure-badge">● SECURE</span>
-      </div>
-
-      {/* Boot lines */}
-      <motion.div
-        className="tp-boot"
-        initial={{ opacity: 0 }}
-        animate={inView ? { opacity: 1 } : {}}
-        transition={{ delay: 0.5, duration: 0.6 }}
-      >
-        {['System: Ready', 'Encryption: Active', 'Awaiting input...'].map((l, i) => (
-          <motion.span
-            key={l}
-            className="tp-boot-line"
-            initial={{ opacity: 0 }}
-            animate={inView ? { opacity: 1 } : {}}
-            transition={{ delay: 0.55 + i * 0.12 }}
-          >
-            <span className="tp-boot-prefix">&gt;</span> {l}
-          </motion.span>
-        ))}
-      </motion.div>
-
-      {/* Form */}
-      <form className="tp-form" onSubmit={handleSubmit} noValidate>
-        <div className="tp-row">
-          <TpField label="NAME"  name="name"  value={form.name}  onChange={update} placeholder="Your full name" />
-          <TpField label="EMAIL" name="email" type="email" value={form.email} onChange={update} placeholder="your@email.com" />
-        </div>
-        <TpField label="SUBJECT" name="subject" value={form.subject} onChange={update} placeholder="What's this about?" />
-        <TpField label="MESSAGE" name="message" value={form.message} onChange={update} placeholder="Tell me about your project or idea..." textarea />
-
-        <motion.button
-          type="submit"
-          className="tp-submit"
-          disabled={status !== 'idle'}
-          whileHover={status === 'idle' ? { scale: 1.015 } : {}}
-          whileTap={status === 'idle'   ? { scale: 0.975 } : {}}
-        >
-          {status === 'sending' && <span className="contact-spinner" />}
-          <span>{label}</span>
-        </motion.button>
-
-        <AnimatePresence>
-          {status === 'sent' && (
-            <motion.p
-              className="tp-success"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-            >
-              ✓ Email client opened with your message pre-filled — hit Send to complete the transmission.
-            </motion.p>
-          )}
-        </AnimatePresence>
-      </form>
-    </motion.div>
-  );
-}
-
-function TpField({
-  label, name, value, onChange, placeholder, type = 'text', textarea,
-}: {
-  label: string; name: string; value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-  placeholder: string; type?: string; textarea?: boolean;
-}) {
-  return (
-    <div className="tp-field">
-      <label className="tp-prompt" htmlFor={name}>
-        <span className="tp-prompt-arrow">&gt;_</span> {label}
-      </label>
-      {textarea ? (
-        <textarea id={name} name={name} value={value} onChange={onChange}
-          placeholder={placeholder} rows={4} required className="tp-input" />
-      ) : (
-        <input id={name} name={name} type={type} value={value} onChange={onChange}
-          placeholder={placeholder} required className="tp-input" />
-      )}
-    </div>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────────────
-   Main export
-───────────────────────────────────────────────────────────────── */
 export default function Contact() {
   const [ref, inView] = useInView({ threshold: 0.07, triggerOnce: true });
   const [form, setForm] = useState<FormState>({ name: '', email: '', subject: '', message: '' });
@@ -244,19 +42,40 @@ export default function Contact() {
   const update = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm(f => ({ ...f, [e.target.name]: e.target.value }));
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus('sending');
-    const body = `Name: ${form.name}\nEmail: ${form.email}\n\n${form.message}`;
-    const mailto =
-      `mailto:sairamvrm@gmail.com` +
-      `?subject=${encodeURIComponent(form.subject || 'Portfolio Contact')}` +
-      `&body=${encodeURIComponent(body)}`;
-    setTimeout(() => {
-      window.location.href = mailto;
-      setStatus('sent');
-      setForm({ name: '', email: '', subject: '', message: '' });
-    }, 900);
+
+    try {
+      const response = await fetch(`https://formsubmit.co/ajax/${CONTACT_EMAIL}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          subject: form.subject,
+          message: form.message,
+          _replyto: form.email,
+          _subject: form.subject
+            ? `[Portfolio] ${form.subject}`
+            : `[Portfolio] Message from ${form.name}`,
+          _template: 'table',
+        }),
+      });
+
+      if (response.ok) {
+        setStatus('sent');
+        setForm({ name: '', email: '', subject: '', message: '' });
+        setTimeout(() => setStatus('idle'), 5000);
+      } else {
+        setStatus('error');
+      }
+    } catch {
+      setStatus('error');
+    }
   };
 
   return (
@@ -274,13 +93,153 @@ export default function Contact() {
             Get In <span className="gradient-text">Touch</span>
           </h2>
           <p className="contact-subtitle">
-            Have a project, research idea, or collaboration in mind? I'd love to hear from you.
+            Open to full-time roles, internships, and research collaborations. Send a message below
+            or email me directly — I typically reply within 24 hours.
           </p>
         </motion.div>
 
-        <div className="contact-grid">
-          <TerminalForm form={form} update={update} status={status} handleSubmit={handleSubmit} inView={inView} />
-          <CommHub inView={inView} />
+        <div className="contact-layout">
+          <motion.aside
+            className="contact-info-panel"
+            initial={{ opacity: 0, x: -24 }}
+            animate={inView ? { opacity: 1, x: 0 } : {}}
+            transition={{ delay: 0.15, duration: 0.7 }}
+          >
+            <div className="contact-availability">
+              <span className="contact-availability-dot" />
+              Available for opportunities
+            </div>
+
+            <ul className="contact-links">
+              {CONTACT_LINKS.map((item, i) => (
+                <motion.li
+                  key={item.label}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={inView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ delay: 0.25 + i * 0.08, duration: 0.5 }}
+                >
+                  {item.href ? (
+                    <a
+                      href={item.href}
+                      target={item.href.startsWith('http') ? '_blank' : undefined}
+                      rel="noreferrer"
+                      className="contact-link-card"
+                    >
+                      <span className="contact-link-label">{item.label}</span>
+                      <span className="contact-link-value">{item.value}</span>
+                      <span className="contact-link-desc">{item.description}</span>
+                    </a>
+                  ) : (
+                    <div className="contact-link-card">
+                      <span className="contact-link-label">{item.label}</span>
+                      <span className="contact-link-value">{item.value}</span>
+                      <span className="contact-link-desc">{item.description}</span>
+                    </div>
+                  )}
+                </motion.li>
+              ))}
+            </ul>
+
+            <p className="contact-note">
+              Prefer email? Click the address above or write to{' '}
+              <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+            </p>
+          </motion.aside>
+
+          <motion.div
+            className="contact-form-panel"
+            initial={{ opacity: 0, x: 24 }}
+            animate={inView ? { opacity: 1, x: 0 } : {}}
+            transition={{ delay: 0.2, duration: 0.7 }}
+          >
+            <form className="contact-form" onSubmit={handleSubmit} noValidate>
+              <div className="contact-form-row">
+                <div className="contact-field">
+                  <label htmlFor="name">Your Name</label>
+                  <input
+                    id="name"
+                    name="name"
+                    type="text"
+                    value={form.name}
+                    onChange={update}
+                    placeholder="Jane Recruiter"
+                    required
+                  />
+                </div>
+                <div className="contact-field">
+                  <label htmlFor="email">Your Email</label>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={form.email}
+                    onChange={update}
+                    placeholder="you@company.com"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="contact-field">
+                <label htmlFor="subject">Subject</label>
+                <input
+                  id="subject"
+                  name="subject"
+                  type="text"
+                  value={form.subject}
+                  onChange={update}
+                  placeholder="Software Engineer role at ..."
+                  required
+                />
+              </div>
+
+              <div className="contact-field">
+                <label htmlFor="message">Message</label>
+                <textarea
+                  id="message"
+                  name="message"
+                  value={form.message}
+                  onChange={update}
+                  placeholder="Tell me about the role, team, or project..."
+                  rows={5}
+                  required
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="contact-submit"
+                disabled={status === 'sending'}
+              >
+                {status === 'sending' && <span className="contact-spinner" />}
+                {status === 'sending' ? 'Sending...' : 'Send Message'}
+              </button>
+
+              <AnimatePresence>
+                {status === 'sent' && (
+                  <motion.p
+                    className="contact-feedback contact-feedback--success"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    Message sent! I&apos;ll get back to you at your email soon.
+                  </motion.p>
+                )}
+                {status === 'error' && (
+                  <motion.p
+                    className="contact-feedback contact-feedback--error"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    Something went wrong. Please email me directly at{' '}
+                    <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+                  </motion.p>
+                )}
+              </AnimatePresence>
+            </form>
+          </motion.div>
         </div>
       </div>
     </section>

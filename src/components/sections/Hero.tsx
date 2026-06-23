@@ -8,7 +8,7 @@ const roles = [
   'Software Engineer',
   'AI Researcher',
   'Founder @ Vytara AI',
-  'MS CS @ UIS — GPA 4.0',
+  'MS CS @ UIS · GPA 4.0',
   'AWS Solutions Architect',
 ];
 
@@ -125,7 +125,7 @@ export default function Hero() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.5, duration: 0.7 }}
           >
-            Hello, World — I'm
+            Hi, I'm
           </motion.p>
 
           <motion.h1
@@ -157,15 +157,15 @@ export default function Hero() {
           >
             <button
               className="btn-primary"
-              onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => document.getElementById('experience')?.scrollIntoView({ behavior: 'smooth' })}
             >
-              <span>Explore My Work</span>
+              <span>View Experience</span>
             </button>
             <button
               className="btn-secondary"
-              onClick={() => document.getElementById('research')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
             >
-              View Research
+              Contact Me
             </button>
           </motion.div>
         </motion.div>

@@ -21,7 +21,7 @@ const experiences = [
     current: true,
     bullets: [
       'Worked within agile scrum-based engineering team, leveraging React, TypeScript, Java Spring Boot, and Python to build scalable distributed services and AI-powered features.',
-      'Advocated and maintained API governance through collaboration, automation and outreach — demonstrating excellent communication skills and strong developer experience focus.',
+      'Advocated and maintained API governance through collaboration, automation, and outreach, with a strong focus on developer experience and communication.',
       'Identified improvements to existing critical shared services, integrating LLM and ML capabilities with Python to accelerate AI-driven product development across the organization.',
     ],
   },

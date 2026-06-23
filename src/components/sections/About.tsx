@@ -10,29 +10,34 @@ const stats = [
   { value: '5+', label: 'Years Coding' },
 ];
 
+const highlights = [
+  'Founder & Lead Engineer at Vytara AI, a production wellness platform with 200+ users',
+  'First-author research accepted at CVPR 2026 and IEEE ICNC 2026',
+  'Full-stack development with React, Java Spring Boot, Python, and AWS',
+  'Strong focus on scalable systems, API design, and ML in production',
+];
+
 const education = [
   {
     degree: 'M.S. Computer Science',
     school: 'University of Illinois Springfield',
-    meta: 'GPA 4.0 / 4.0 · Expected June 2026',
+    meta: 'GPA 4.0 · Expected June 2026',
   },
   {
     degree: 'B.S. Computer Science',
     school: 'Lovely Professional University, India',
-    meta: 'GPA 3.75 / 4.0 · May 2024',
+    meta: 'GPA 3.75 / 4.0',
   },
 ];
 
 function AboutPhoto({ inView }: { inView: boolean }) {
   const cardRef = useRef<HTMLDivElement>(null);
 
-  // 3-D tilt driven by mouse position over the card
   const rotateX = useMotionValue(0);
   const rotateY = useMotionValue(0);
   const springX = useSpring(rotateX, { stiffness: 120, damping: 20 });
   const springY = useSpring(rotateY, { stiffness: 120, damping: 20 });
 
-  // Shine overlay shifts with tilt
   const shineX = useTransform(springY, [-12, 12], ['0%', '100%']);
   const shineY = useTransform(springX, [-12, 12], ['0%', '100%']);
 
@@ -41,8 +46,8 @@ function AboutPhoto({ inView }: { inView: boolean }) {
     if (!rect) return;
     const cx = rect.left + rect.width / 2;
     const cy = rect.top + rect.height / 2;
-    rotateX.set(((e.clientY - cy) / (rect.height / 2)) * -10);
-    rotateY.set(((e.clientX - cx) / (rect.width / 2)) * 10);
+    rotateX.set(((e.clientY - cy) / (rect.height / 2)) * -8);
+    rotateY.set(((e.clientX - cx) / (rect.width / 2)) * 8);
   };
 
   const onMouseLeave = () => {
@@ -53,11 +58,10 @@ function AboutPhoto({ inView }: { inView: boolean }) {
   return (
     <motion.div
       className="about-photo-wrap"
-      initial={{ opacity: 0, y: 40, scale: 0.94 }}
+      initial={{ opacity: 0, y: 40, scale: 0.96 }}
       animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
       transition={{ delay: 0.85, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
     >
-      {/* 3-D tilt card */}
       <motion.div
         ref={cardRef}
         className="about-photo-card"
@@ -69,40 +73,31 @@ function AboutPhoto({ inView }: { inView: boolean }) {
         }}
         onMouseMove={onMouseMove}
         onMouseLeave={onMouseLeave}
-        whileHover={{ scale: 1.03 }}
+        whileHover={{ scale: 1.02 }}
         transition={{ scale: { duration: 0.3 } }}
       >
-        {/* Glow border ring */}
         <div className="about-photo-ring" />
-
-        {/* Photo */}
         <img
           src={avatarImg}
           alt="Satya Sairam Varma"
           className="about-photo-img"
           draggable={false}
         />
-
-        {/* Moving shine overlay */}
         <motion.div
           className="about-photo-shine"
           style={{
             background: useTransform(
               [shineX, shineY],
               ([x, y]) =>
-                `radial-gradient(circle at ${x} ${y}, rgba(34,211,238,0.12) 0%, transparent 60%)`,
+                `radial-gradient(circle at ${x} ${y}, rgba(34,211,238,0.1) 0%, transparent 60%)`,
             ),
           }}
         />
-
-        {/* Bottom identity chip */}
         <div className="about-photo-chip">
           <span className="about-photo-chip-dot" />
           <span>Satya Sairam Varma · Atlanta, GA</span>
         </div>
       </motion.div>
-
-      {/* Ambient glow underneath */}
       <div className="about-photo-glow" />
     </motion.div>
   );
@@ -123,9 +118,13 @@ export default function About() {
         >
           <p className="section-label">01 / About</p>
           <h2 className="section-title">
-            Building the Future{' '}
-            <span className="gradient-text">with AI</span>
+            Software Engineer &{' '}
+            <span className="gradient-text">AI Researcher</span>
           </h2>
+          <p className="about-intro">
+            M.S. Computer Science candidate at UIS (4.0 GPA). Open to software engineering
+            and AI research roles.
+          </p>
         </motion.div>
 
         <div className="about-grid">
@@ -135,30 +134,20 @@ export default function About() {
             animate={inView ? { opacity: 1, x: 0 } : {}}
             transition={{ delay: 0.2, duration: 0.7 }}
           >
-            <p>
-              I'm a <strong>Software Engineer and AI Researcher</strong> pursuing my Master's
-              in Computer Science at the University of Illinois Springfield with a{' '}
-              <span className="about-highlight">4.0 GPA</span>. I build intelligent systems
-              that sit at the intersection of engineering and research.
-            </p>
-            <p>
-              As the <strong>Founder & Lead Engineer of Vytara AI</strong>, I've built
-              a production AI wellness platform serving 200+ global users — combining
-              React, Java Spring Boot, Python, and cutting-edge LLMs into a unified product.
-            </p>
-            <p>
-              My research spans <strong>Spiking Neural Networks</strong>, energy-efficient AI,
-              and multimodal perception — with{' '}
-              <span className="about-highlight">first-author publications</span> accepted
-              at CVPR 2026 and IEEE ICNC 2026.
-            </p>
-            <p>
-              I'm passionate about API governance, developer experience, and building systems
-              that are both <strong>scalable</strong> and <strong>maintainable</strong> —
-              from design to production.
+            <p className="about-lead">
+              I build production AI systems and publish research in computer vision and
+              energy-efficient neural networks. My work spans full-stack engineering,
+              machine learning, and research that ships to real users.
             </p>
 
+            <ul className="about-highlights">
+              {highlights.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+
             <div className="about-edu">
+              <p className="about-edu-title">Education</p>
               {education.map((edu) => (
                 <div key={edu.school} className="edu-item">
                   <span className="edu-degree">{edu.degree}</span>
@@ -189,7 +178,6 @@ export default function About() {
               ))}
             </div>
 
-            {/* Avatar photo — revealed below the stats */}
             <AboutPhoto inView={inView} />
           </motion.div>
         </div>

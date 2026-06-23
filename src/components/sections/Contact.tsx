@@ -94,7 +94,7 @@ export default function Contact() {
           </h2>
           <p className="contact-subtitle">
             Open to full-time roles, internships, and research collaborations. Send a message below
-            or email me directly — I typically reply within 24 hours.
+            or email me directly. I typically reply within 24 hours.
           </p>
         </motion.div>
 
